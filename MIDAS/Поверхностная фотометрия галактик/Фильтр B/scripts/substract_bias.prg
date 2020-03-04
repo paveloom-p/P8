@@ -39,7 +39,6 @@ COMPUTE/IMAGE ObjectBias = S13050712.FTS - MeanBias
 
 ! Вычисление MeanFlat
 
-WRITE/OUT
 WRITE/OUT "     Вычисление MeanFlat"
 WRITE/OUT
 
@@ -74,3 +73,27 @@ WRITE/OUT "     Деление объекта на нормированное с
 WRITE/OUT
 
 COMPUTE/IMAGE ObjectFlat = ObjectBias / NFlat
+
+! Создание таблицы с координатами образца фона
+
+CREATE/TABLE BackgroundCoords 4 1
+
+CREATE/COLUMN BackgroundCoords XSTART "pixel" I6 I*4
+CREATE/COLUMN BackgroundCoords YSTART "pixel" I6 I*4
+
+CREATE/COLUMN BackgroundCoords XEND "pixel" I6 I*4
+CREATE/COLUMN BackgroundCoords YEND "pixel" I6 I*4
+
+WRITE/TABLE BackgroundCoords :XSTART @1 869
+WRITE/TABLE BackgroundCoords :YSTART @1 832
+
+WRITE/TABLE BackgroundCoords :XEND @1 995
+WRITE/TABLE BackgroundCoords :YEND @1 958
+
+! Интерполяция фона в область объекта
+
+WRITE/OUT
+WRITE/OUT "     Интерполяция фона в область объекта"
+WRITE/OUT
+
+FIT/FLATSKY ObjectInterpolated = ObjectFlat BackgroundCoords 1,1 SkyFrame.bdf
