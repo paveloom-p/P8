@@ -52,30 +52,3 @@
 	         git add -A
 	         git commit --amend
 	         git push --force-with-lease
-
-     ## Правило для подключения удалённого репозитория и
-     ## загрузки в него стартового make-файла
-
-     ifeq (git-new, $(firstword $(MAKECMDGOALS)))
-          new_rep := $(wordlist 2, 2, $(MAKECMDGOALS))
-          $(eval $(new_rep):;@#)
-     endif
-
-     git-new :
-	          $(make_name) git-clean
-	          git init
-	          git remote add origin git@github.com:$(username)/$(new_rep).git
-	          git add Makefile
-	          git commit -m $(start_message)
-	          git push -u origin master
-
-     ## Правило для удаления репозитория в текущей директории
-
-     git-clean :
-	            rm -rf .git
-
-     # Правило для создания архивов
-
-     archive :
-	          zip -q "Публикация кода на GitHub.zip" "Публикация кода на GitHub"
-	          zip -qr Make-файлы.zip ../Make-файлы/
