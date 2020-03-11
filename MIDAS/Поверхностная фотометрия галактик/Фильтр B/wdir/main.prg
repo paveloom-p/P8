@@ -2,7 +2,7 @@
 ECHO/OFF
 
 ! Смена директории для поиска файлов на bias
-SET/MIDAS_SYSTEM DPATH=bias
+SET/MIDAS_SYSTEM DPATH=../bias
 
 ! Вычисление MeanBias
 
@@ -13,17 +13,15 @@ WRITE/OUT
 COMPUTE/IMAGE MeanBias = (S13051113.FTS + S13051116.FTS) / 2
 
 ! Смена директории для поиска файлов на flats
-SET/MIDAS_SYSTEM DPATH=flats
+SET/MIDAS_SYSTEM DPATH=../flats
 
 ! Вычитание MeanBias из flats файлов
 
-WRITE/OUT
 WRITE/OUT "     Вычитание MeanBias из S13051014.FTS (Flats, 1)"
 WRITE/OUT
 
 COMPUTE/IMAGE FlatBias1 = S13051014.FTS - MeanBias
 
-WRITE/OUT
 WRITE/OUT "     Вычитание MeanBias из S13051015.FTS (Flats, 2)"
 WRITE/OUT
 
@@ -35,7 +33,10 @@ WRITE/OUT
 WRITE/OUT "     Вычитание MeanBias из S13050712.FTS (Object)"
 WRITE/OUT
 
-COMPUTE/IMAGE ObjectBias = S13050712.FTS-MeanBias
+! Смена директории для поиска файлов на директорию выше
+SET/MIDAS_SYSTEM DPATH=../
+
+COMPUTE/IMAGE ObjectBias = S13050712.FTS - MeanBias
 
 ! Вычисление MeanFlat
 
@@ -70,7 +71,6 @@ COMPUTE/IMAGE NFlat = MedFlat / 3.229156e+04
 ! Деление объекта на нормированное среднее плоское поле
 
 WRITE/OUT "     Деление объекта на нормированное среднее плоское поле"
-WRITE/OUT
 
 COMPUTE/IMAGE ObjectFlat = ObjectBias / NFlat
 
@@ -113,4 +113,4 @@ WRITE/OUT "     единичной площадке в единицу"
 WRITE/OUT "     времени в зв. величинах"
 WRITE/OUT
 
-COMPUTE/IMAGE ObjectMu=-2.5*LOG(ObjectInterpolated/t)+2.5*LOG(S)
+COMPUTE/IMAGE ObjectMu = -2.5 * LOG(ObjectInterpolated / {t}) + 2.5 * LOG({S})
