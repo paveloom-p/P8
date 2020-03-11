@@ -7,4 +7,4 @@
      .ALL : clean
 
      clean :
-	        rm -f *.bdf *.tbl *.KEY *.info*
+	        rm -f *.bdf *.tbl *.KEY *.info* *.ima *.ps

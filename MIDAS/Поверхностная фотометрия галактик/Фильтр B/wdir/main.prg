@@ -66,7 +66,7 @@ WRITE/OUT
 WRITE/OUT "     Деление исходного плоского поля на среднее MeanFlat"
 WRITE/OUT
 
-COMPUTE/IMAGE NFlat = MedFlat / 3.229156e+04
+COMPUTE/IMAGE NFlat = MedFlat / 3.067211e+04
 
 ! Деление объекта на нормированное среднее плоское поле
 
@@ -84,11 +84,11 @@ CREATE/COLUMN BackgroundCoords YSTART "pixel" I6 I*4
 CREATE/COLUMN BackgroundCoords XEND "pixel" I6 I*4
 CREATE/COLUMN BackgroundCoords YEND "pixel" I6 I*4
 
-WRITE/TABLE BackgroundCoords :XSTART @1 709
-WRITE/TABLE BackgroundCoords :YSTART @1 739
+WRITE/TABLE BackgroundCoords :XSTART @1 719
+WRITE/TABLE BackgroundCoords :YSTART @1 657
 
-WRITE/TABLE BackgroundCoords :XEND @1 746
-WRITE/TABLE BackgroundCoords :YEND @1 693
+WRITE/TABLE BackgroundCoords :XEND @1 759
+WRITE/TABLE BackgroundCoords :YEND @1 697
 
 ! Интерполяция фона в область объекта
 
@@ -96,7 +96,7 @@ WRITE/OUT
 WRITE/OUT "     Интерполяция фона в область объекта"
 WRITE/OUT
 
-FIT/FLATSKY ObjectInterpolated = ObjectFlat BackgroundCoords 1,1 SkyFrame.bdf
+!FIT/FLAT ObjectInterpolated = ObjectFlat CURSOR 1,1 SkyFrame.bdf
 
 ! Запись данных из шапки объекта
 DEFINE/LOCAL z/D/1/1 43.9D0 ! Зенитное расстояние объекта
@@ -113,4 +113,25 @@ WRITE/OUT "     единичной площадке в единицу"
 WRITE/OUT "     времени в зв. величинах"
 WRITE/OUT
 
-COMPUTE/IMAGE ObjectMu = -2.5 * LOG(ObjectInterpolated / {t}) + 2.5 * LOG({S})
+!COMPUTE/IMAGE ObjectMu = -2.5 * LOG(ObjectInterpolated / {t}) + 2.5 * LOG({S})
+COMPUTE/IMAGE ObjectMu = -2.5 * LOG(ObjectFlat / {t}) + 2.5 * LOG({S})
+
+! Запись коэффициента поглощения в текущей цветовой полосе
+DEFINE/LOCAL K_B/D/1/1 0.34
+
+! Вынос за атмосферу
+
+WRITE/OUT "     Вынос за атмосферу"
+WRITE/OUT
+
+COMPUTE/IMAGE ObjectZ = ObjectMu - {K_B} / COS({z})
+
+! Запись константы стандартизации
+DEFINE/LOCAL C_UGC1198_B/D/1/1 26.5
+
+! Стандартизация
+
+WRITE/OUT "     Приведение в стандартную систему звёздных величин"
+WRITE/OUT
+
+COMPUTE/IMAGE ObjectC = ObjectZ + {C_UGC1198_B}
