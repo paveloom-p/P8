@@ -25,11 +25,10 @@ COMPUTE/IMAGE FlatBias1 = S13051014.FTS - MeanBias
 WRITE/OUT "     Вычитание MeanBias из S13051015.FTS (Flats, 2)"
 WRITE/OUT
 
-COMPUTE/IMAGE FlatBias2 = S13051015.FTS - MeanBias
+COMPUTE/IMAGE FlatBias2 = S13051013.FTS - MeanBias
 
 ! Вычитание MeanBias из файла объекта
 
-WRITE/OUT
 WRITE/OUT "     Вычитание MeanBias из S13050712.FTS (Object)"
 WRITE/OUT
 
@@ -50,7 +49,7 @@ COMPUTE/IMAGE MeanFlat = (FlatBias1 + FlatBias2) / 2
 WRITE/OUT "     Медианное сглаживание MeanFlat"
 WRITE/OUT
 
-FILTER/MEDIAN MeanFlat MedFlat 10, 10
+FILTER/MEDIAN MeanFlat MedFlat 10,10
 
 ! Вычисление и вывод максимума на MeanFlat 
 
@@ -66,7 +65,7 @@ WRITE/OUT
 WRITE/OUT "     Деление исходного плоского поля на среднее MeanFlat"
 WRITE/OUT
 
-COMPUTE/IMAGE NFlat = MedFlat / 3.067211e+04
+COMPUTE/IMAGE NFlat = MeanFlat / 3.534500e+04
 
 ! Деление объекта на нормированное среднее плоское поле
 
@@ -90,13 +89,18 @@ WRITE/TABLE BackgroundCoords :YSTART @1 657
 WRITE/TABLE BackgroundCoords :XEND @1 759
 WRITE/TABLE BackgroundCoords :YEND @1 697
 
+! Открыть изображение объекта
+
+CLEAR/DISPLAY
+LOAD/IMAGE ObjectFlat cuts=1000,6000 scale=2
+
 ! Интерполяция фона в область объекта
 
 WRITE/OUT
 WRITE/OUT "     Интерполяция фона в область объекта"
 WRITE/OUT
 
-!FIT/FLAT ObjectInterpolated = ObjectFlat CURSOR 1,1 SkyFrame.bdf
+FIT/FLAT ObjectInterpolated = ObjectFlat CURSOR 1,1 SkyFrame.bdf
 
 ! Запись данных из шапки объекта
 DEFINE/LOCAL z/D/1/1 43.9D0 ! Зенитное расстояние объекта
@@ -113,8 +117,7 @@ WRITE/OUT "     единичной площадке в единицу"
 WRITE/OUT "     времени в зв. величинах"
 WRITE/OUT
 
-!COMPUTE/IMAGE ObjectMu = -2.5 * LOG(ObjectInterpolated / {t}) + 2.5 * LOG({S})
-COMPUTE/IMAGE ObjectMu = -2.5 * LOG(ObjectFlat / {t}) + 2.5 * LOG({S})
+COMPUTE/IMAGE ObjectMu = -2.5 * LOG(ObjectInterpolated / {t}) + 2.5 * LOG({S})
 
 ! Запись коэффициента поглощения в текущей цветовой полосе
 DEFINE/LOCAL K_B/D/1/1 0.34
@@ -135,3 +138,9 @@ WRITE/OUT "     Приведение в стандартную систему з
 WRITE/OUT
 
 COMPUTE/IMAGE ObjectC = ObjectZ + {C_UGC1198_B}
+
+! Построение изофот
+
+CREAT/GRA
+PLOT/CONT ObjectC [@412,@427:@604,@612] ? 19:26:1 ? 1
+
