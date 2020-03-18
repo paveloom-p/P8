@@ -145,3 +145,36 @@ COPY/GRA POSTSCRIPT
 $mv -f postscript.ps ../plots/Isophote.ps
 DEL/GRA
 
+! Построение разрезов (выбор разреза вручную)
+
+WRITE/OUT "     Построение разрезов"
+WRITE/OUT
+
+CREAT/GRA
+SET/GRA yaxis=20,27
+SET/GRA LTYPE=1 STYPE=0
+
+LOAD/IMAGE ObjectC scale=2 cuts=22,27
+
+EXTRACT/TRACE 1 trace1 PLOT C
+
+COPY/IT trace1 trace1.tbl :Radius
+NAME/COLUMN trace1.tbl :LAB002 :Mag
+
+COMP/TAB trace1 :Radius = :Radius - 514
+
+PLOT/TAB trace1.tbl :Radius :Mag
+
+SET/GRA LTYPE=3
+
+EXTRACT/TRACE 1 trace2 PLOT C
+
+COPY/IT trace2 trace2.tbl :Radius
+NAME/COLUMN trace2.tbl :LAB002 :Mag
+
+COMP/TAB trace2 :Radius = :Radius - 506
+
+OVERPLOT/TAB trace2.tbl :Radius :Mag
+
+COPY/GRA POSTSCRIPT
+$mv -f postscript.ps ../plots/Cuts.ps
