@@ -10,7 +10,7 @@ WRITE/OUT
 WRITE/OUT "     Вычисление MeanBias. "
 WRITE/OUT
 
-COMPUTE/IMAGE MeanBias = (S13051113.FTS + S13051116.FTS) / 2
+COMPUTE/IMAGE MeanBias = (S13051119.FTS + S13051116.FTS) / 2
 
 ! Смена директории для поиска файлов на flats
 SET/MIDAS_SYSTEM DPATH=../flats
@@ -22,7 +22,7 @@ WRITE/OUT
 
 COMPUTE/IMAGE FlatBias1 = S13051014.FTS - MeanBias
 
-WRITE/OUT "     Вычитание MeanBias из S13051015.FTS (Flats, 2)"
+WRITE/OUT "     Вычитание MeanBias из S13051013.FTS (Flats, 2)"
 WRITE/OUT
 
 COMPUTE/IMAGE FlatBias2 = S13051013.FTS - MeanBias
@@ -70,29 +70,23 @@ COMPUTE/IMAGE NFlat = MeanFlat / 3.534500e+04
 ! Деление объекта на нормированное среднее плоское поле
 
 WRITE/OUT "     Деление объекта на нормированное среднее плоское поле"
+WRITE/OUT
 
 COMPUTE/IMAGE ObjectFlat = ObjectBias / NFlat
 
-! Создание таблицы с координатами образца фона
+! Считывание таблицы с координатами образца фона
+CREATE/TABLE BackgroundCoords 4 82 ../BackgroundCoords
 
-CREATE/TABLE BackgroundCoords 4 1
-
-CREATE/COLUMN BackgroundCoords XSTART "pixel" I6 I*4
-CREATE/COLUMN BackgroundCoords YSTART "pixel" I6 I*4
-
-CREATE/COLUMN BackgroundCoords XEND "pixel" I6 I*4
-CREATE/COLUMN BackgroundCoords YEND "pixel" I6 I*4
-
-WRITE/TABLE BackgroundCoords :XSTART @1 719
-WRITE/TABLE BackgroundCoords :YSTART @1 657
-
-WRITE/TABLE BackgroundCoords :XEND @1 759
-WRITE/TABLE BackgroundCoords :YEND @1 697
+! Смена названий столбцов
+NAME/COLUMN BackgroundCoords #1 :XSTART
+NAME/COLUMN BackgroundCoords #2 :YSTART
+NAME/COLUMN BackgroundCoords #3 :XEND
+NAME/COLUMN BackgroundCoords #4 :YEND
 
 ! Открыть изображение объекта
 
-CLEAR/DISPLAY
-LOAD/IMAGE ObjectFlat cuts=1000,6000 scale=2
+! CLEAR/DISPLAY
+! LOAD/IMAGE ObjectFlat cuts=1000,6000 scale=2
 
 ! Интерполяция фона в область объекта
 
@@ -100,7 +94,7 @@ WRITE/OUT
 WRITE/OUT "     Интерполяция фона в область объекта"
 WRITE/OUT
 
-FIT/FLAT ObjectInterpolated = ObjectFlat CURSOR 1,1 SkyFrame.bdf
+FIT/FLAT ObjectInterpolated = ObjectFlat BackgroundCoords 1,1 SkyFrame.bdf
 
 ! Запись данных из шапки объекта
 DEFINE/LOCAL z/D/1/1 43.9D0 ! Зенитное расстояние объекта
@@ -124,6 +118,7 @@ DEFINE/LOCAL K_B/D/1/1 0.34
 
 ! Вынос за атмосферу
 
+WRITE/OUT
 WRITE/OUT "     Вынос за атмосферу"
 WRITE/OUT
 
@@ -141,6 +136,12 @@ COMPUTE/IMAGE ObjectC = ObjectZ + {C_UGC1198_B}
 
 ! Построение изофот
 
+WRITE/OUT "     Построение изофот"
+WRITE/OUT
+
 CREAT/GRA
 PLOT/CONT ObjectC [@412,@427:@604,@612] ? 19:26:1 ? 1
+COPY/GRA POSTSCRIPT
+$mv -f postscript.ps ../plots/Isophote.ps
+DEL/GRA
 
