@@ -151,7 +151,7 @@ WRITE/OUT "     Построение разрезов"
 WRITE/OUT
 
 CREAT/GRA
-SET/GRA yaxis=20,27
+SET/GRA yaxis=27,20
 SET/GRA LTYPE=1 STYPE=0
 
 LOAD/IMAGE ObjectC scale=2 cuts=22,27
