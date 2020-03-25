@@ -52,3 +52,13 @@
 	         git add -A
 	         git commit --amend
 	         git push --force-with-lease
+
+     # Правило для создания архивов
+
+     archive :
+	          find MIDAS/ -path '*/.*' -prune -o -type f -print | zip Архивы/MIDAS.zip -FS -q -@
+	          cd MIDAS && find Квадратное\ уравнение/ -path '*/.*' -prune -o -type f -print | zip ../Архивы/MIDAS/Квадратное\ уравнение.zip -FS -q -@ && cd ../
+	          cd MIDAS && find Поверхностная\ фотометрия\ галактик/ -path '*/.*' -prune -o -type f -print | zip ../Архивы/MIDAS/Поверхностная\ фотометрия\ галактик.zip -FS -q -@ && cd ../
+	          cd MIDAS/Поверхностная\ фотометрия\ галактик/ && find Презентация/ -path '*/.*' -prune -o -type f -print | zip ../../Архивы/MIDAS/Поверхностная\ фотометрия\ галактик/Презентация.zip -FS -q -@ && cd ../../
+	          cd MIDAS/Поверхностная\ фотометрия\ галактик/ && find Фильтр\ B/ -path '*/.*' -prune -o -type f -print | zip ../../Архивы/MIDAS/Поверхностная\ фотометрия\ галактик/Фильтр\ B.zip -FS -q -@ && cd ../../
+	          cd MIDAS/Поверхностная\ фотометрия\ галактик/ && find UGC\ 1198/ -path '*/.*' -prune -o -type f -print | zip ../../Архивы/MIDAS/Поверхностная\ фотометрия\ галактик/UGC\ 1198.zip -FS -q -@ && cd ../../
