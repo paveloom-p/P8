@@ -80,7 +80,7 @@ DEFINE/LOCAL FWHM_MEAN/D/1/1
 FWHM_MEAN = ({XFWHM_MEAN} + {YFWHM_MEAN})/2
 
 DEFINE/LOCAL R_1/I/1/1
-R_1 = M$NINT(3 * {FWHM_MEAN} / 288 + 1 + 1) ! Ещё единица для округления в большую сторону
+R_1 = M$NINT(3 * {FWHM_MEAN} / 0.000288 + 1 + 1) ! Ещё единица для округления в большую сторону
 
 WRITE/OUT
 WRITE/OUT "    " Размер апертуры будет положен равным {R_1}
